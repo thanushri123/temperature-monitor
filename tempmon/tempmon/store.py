@@ -118,6 +118,12 @@ class Store:
             c.execute("DELETE FROM device_state WHERE last_ts < ?", (cutoff_ts,))
         return {"readings": r, "alerts": a, "rejected": j}
 
+    def clear_all(self):
+        """Delete every row (used by the dashboard's Clear all data button)."""
+        with self.tx() as c:
+            for table in ("readings", "alerts", "rejected", "device_state"):
+                c.execute(f"DELETE FROM {table}")
+
     # ---- reads --------------------------------------------------------
     def _df(self, sql: str, params: Iterable = ()) -> pd.DataFrame:
         with self._lock:
